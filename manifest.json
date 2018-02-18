@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Personal Clipboard",
+  "description": "Creates an editable clipboard to copy and paste characters, text, and images to and from.",
+  "author": "Richard Gao",
+  "version": "1.0",
+
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "permissions": [
+    "clipboardRead",
+    "clipboardWrite",
+    "storage",
+    "tabs"
+  ]
+}
