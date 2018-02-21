@@ -1,4 +1,33 @@
 'use strict';
+document.addEventListener("DOMContentLoaded", function() {
+  let form = document.querySelector("form");
+  form.onsubmit = function() {
+    // Get input from form
+    let value = form.querySelector("input[name=text]");
+    let shortcut = form.querySelector("input[name=shortcut]");
+
+    // Create new clickable item on clipboard
+    let item = createItem(value.value, shortcut.value);
+    document.body.append(item);
+
+    // Clear input
+    value.innerHTML = '';
+    shortcut.innerHTML = '';
+
+    return false;
+  }
+});
+
+function createItem(value, shortcut) {
+  let item = document.createElement("div");
+  item.classList.add("col");
+  item.innerHTML = value;
+  item.onclick = (event) => copy(value);
+  return item;
+
+  //TODO bind shortcut to key input
+}
+
 function copy(text) {
   // Workaround to copy to clipboard without selection
   var textArea = document.createElement("textarea");
@@ -16,5 +45,5 @@ function paste() {
   })
 }
 
-document.querySelector("button[name='copy']").addEventListener("click", () => copy("Testing"));
-document.querySelector("button[name='paste']").addEventListener("click", paste);
+// document.querySelector("button[name='copy']").addEventListener("click", () => copy("Testing"));
+// document.querySelector("button[name='paste']").addEventListener("click", paste);
