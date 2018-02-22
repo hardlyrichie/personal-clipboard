@@ -23,7 +23,7 @@ function getClipboard(callback) {
 function sendClipboardToPopup(clipboard, pageNum) {
   // Send message to popup and tell it to display the clipboard
   chrome.runtime.sendMessage({
-    msg: "Sending clipboard", 
+    msg: "Sending clipboard",
     data: clipboard,
     currentPage: pageNum
   });
@@ -64,10 +64,11 @@ chrome.runtime.onMessage.addListener(
         let item = request.data;
         getClipboard(function(storedObject) {
           let clipboard = storedObject.clipboard;
-          clipboard.page1.push(item);
+          let pageNum = request.page;
+          clipboard[`page${pageNum}`].push(item);
           updateClipboard(clipboard);
 
-          console.log("Stored (Current Array): " + clipboard.page1);
+          console.log("Stored (Current Array): " + clipboard[`page${pageNum}`]);
         });
         break;
       case "New page":

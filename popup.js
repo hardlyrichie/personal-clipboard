@@ -19,8 +19,10 @@ document.addEventListener("DOMContentLoaded", function() {
     addItemElementsToDocument([itemElement]);
 
     // Add item to clipboard object and update in chrome storage
-    // TODO update page dynamically
-    storeItem(item);
+    // TODO if page is full, refuse to add
+    let nav = document.querySelector(".page-nav");
+    let pageNum = Array.from(nav.children).indexOf(document.querySelector(".current-page")) + 1;
+    storeItem(item, pageNum);
 
     // Clear input
     form.reset();
@@ -99,10 +101,11 @@ function addItemElementsToDocument(itemElements) {
   }
 }
 
-function storeItem(item) {
+function storeItem(item, pageNum) {
   chrome.runtime.sendMessage({
     msg: "Store item",
-    data: item
+    data: item,
+    page: pageNum
   });
 
   console.log("Item stored");
@@ -137,7 +140,7 @@ function addCurrentPageMarker(pageNum) {
 
   // Add current-page to the current marker
   let nav = document.querySelector(".page-nav");
-  let currentPage = Array.from(nav.children)[pageNum - 1].classList.add("current-page");
+  Array.from(nav.children)[pageNum - 1].classList.add("current-page");
 }
 
 function copy(text) {
