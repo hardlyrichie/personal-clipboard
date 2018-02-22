@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
   let backgroundPage = chrome.extension.getBackgroundPage();
 
   loadClipboard();
-  addPageMarker();
 
   let form = document.querySelector("form");
   form.onsubmit = function() {
@@ -45,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
   // TODO Have new page button only on the last page
   let newPage = document.querySelector("#new-page");
   newPage.onclick = function(event) {
-    addPageMarker();
     clearClipboard();
     chrome.runtime.sendMessage({msg: "New page"});
   };
@@ -110,12 +108,15 @@ function storeItem(item) {
   console.log("Item stored");
 }
 
-function addPageMarker() {
+function addPageMarkers(pages) {
   let nav = document.querySelector(".page-nav");
-  let marker = document.createElement("span");
-  marker.classList.add("circle");
-  nav.appendChild(marker);
-  //TODO bind pagemarker with page
+
+  let numOfMarkers = (pages - nav.children.length);
+  for (let i = 0; i < numOfMarkers; i++) {
+    let marker = document.createElement("span");
+    marker.classList.add("circle");
+    nav.appendChild(marker);
+  }
 }
 
 function clearClipboard() {
@@ -125,6 +126,18 @@ function clearClipboard() {
     emptyItem.classList.add("col");
     active.replaceWith(emptyItem);
   }
+}
+
+function addCurrentPageMarker(pageNum) {
+  // Remove the current-page from previous page marker
+  let marker = document.querySelector(".current-page");
+  if (marker) {
+    marker.classList.remove("current-page");
+  }
+
+  // Add current-page to the current marker
+  let nav = document.querySelector(".page-nav");
+  let currentPage = Array.from(nav.children)[pageNum - 1].classList.add("current-page");
 }
 
 function copy(text) {
@@ -144,13 +157,16 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg !== "Sending clipboard") return;
 
-    clipboard = request.data;
+    clipboard = request.data[`page${request.currentPage}`];
 
     let itemElements = [];
     for (let item of clipboard) {
       itemElements.push(createItemElement(item));
     }
     addItemElementsToDocument(itemElements);
+
+    addPageMarkers(request.data.pages);
+    addCurrentPageMarker(request.currentPage);
   }
 );
 

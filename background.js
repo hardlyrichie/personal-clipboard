@@ -23,8 +23,9 @@ function getClipboard(callback) {
 function sendClipboardToPopup(clipboard, pageNum) {
   // Send message to popup and tell it to display the clipboard
   chrome.runtime.sendMessage({
-    msg: "Sending clipboard",
-    data: clipboard[`page${pageNum}`]
+    msg: "Sending clipboard", 
+    data: clipboard,
+    currentPage: pageNum
   });
 }
 
