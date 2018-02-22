@@ -28,7 +28,20 @@ document.addEventListener("DOMContentLoaded", function() {
     return false;
   }
 
+  // Event delegation
+  let page = document.querySelector(".page");
+  page.onclick = function(event) {
+    let target = event.target.closest("button");
 
+    if (!target) return;
+
+    if (!page.contains(target)) return;
+
+    copy(target.innerHTML);
+  };
+
+  // New page button
+  // let newPage = document.
 });
 
 function loadClipboard() {
@@ -42,8 +55,6 @@ function createItemElement(item) {
   let itemElement = document.createElement("button");
   itemElement.classList.add("col", "active");
   itemElement.innerHTML = item.value;
-  // itemElement.onclick = (event) => copy(item.value);
-  itemElement.onclick = (event) => paste(item.value);
   return itemElement;
 }
 
@@ -54,8 +65,8 @@ function addItemElementsToDocument(itemElements) {
   for (let col of columns) {
     if (!(count < itemElements.length)) return;
 
-    // Checks if col already is active, has content in it
-    if (col.textContent.length !== 0) continue;
+    // Checks if col already is active, is button, then skip
+    if (col.tagName === "BUTTON") continue;
 
     col.replaceWith(itemElements[count]);
     count++;

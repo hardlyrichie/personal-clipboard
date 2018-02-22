@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Personal Clipboard",
-  "description": "Creates an editable clipboard to copy and paste characters, text, and images to and from.",
+  "description": "Creates an editable clipboard to copy and paste Characters, Text, Emojis, ASCII/Text Art to and from.",
   "author": "Richard Gao",
   "version": "1.0",
 
