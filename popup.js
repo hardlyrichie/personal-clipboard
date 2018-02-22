@@ -42,7 +42,8 @@ function createItemElement(item) {
   let itemElement = document.createElement("button");
   itemElement.classList.add("col", "active");
   itemElement.innerHTML = item.value;
-  itemElement.onclick = (event) => copy(item.value);
+  // itemElement.onclick = (event) => copy(item.value);
+  itemElement.onclick = (event) => paste(item.value);
   return itemElement;
 }
 
@@ -80,15 +81,6 @@ function copy(text) {
   document.body.removeChild(textArea);
 
   console.log("Copied: " + text);
-}
-
-function paste() {
-  // Sends message to content script to attempt pasting to currently focused element
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {msg: "paste"});
-  });
-
-  console.log("Pasted");
 }
 
 // Display the clipboard on popup

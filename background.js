@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(function() {
     Therefore, a new object must be created that holds the clipboard item properties
   */
   let clipboard = {
-    page1: [new Item("Δ"), new Item("π"), new Item("💩")]
+    page1: [new Item("Ω"), new Item("π"), new Item("Ω")]
   };
   chrome.storage.sync.set({"clipboard": clipboard}, function() {
     console.log("Clipboard Initialized");

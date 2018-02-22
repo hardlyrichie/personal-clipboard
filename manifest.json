@@ -14,12 +14,14 @@
     "default_popup": "popup.html"
   },
 
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+  "commands" : {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+C"
+      },
+      "description": "Open Clipboard"
     }
-  ],
+  },
 
   "permissions": [
     "clipboardRead",
