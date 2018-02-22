@@ -8,6 +8,7 @@ chrome.runtime.onInstalled.addListener(function() {
     Therefore, a new object must be created that holds the clipboard item properties
   */
   let clipboard = {
+    pages: 1,
     page1: [new Item("Ω"), new Item("π"), new Item("Ω")]
   };
   chrome.storage.sync.set({"clipboard": clipboard}, function() {
@@ -19,22 +20,28 @@ function getClipboard(callback) {
   chrome.storage.sync.get("clipboard", callback);
 }
 
-function sendClipboardToPopup() {
-  getClipboard(function(storedObject) {
-    // Send message to popup and tell it to display the clipboard
-    chrome.runtime.sendMessage({
-      msg: "Sending clipboard",
-      data: storedObject
-    });
-
-    console.log("Clipboard Loaded");
-  })
+function sendClipboardToPopup(clipboard, pageNum) {
+  // Send message to popup and tell it to display the clipboard
+  chrome.runtime.sendMessage({
+    msg: "Sending clipboard",
+    data: clipboard[`page${pageNum}`]
+  });
 }
 
 function updateClipboard(clipboard) {
   chrome.storage.sync.set({"clipboard": clipboard}, function() {
     console.log("Clipboard Updated");
   })
+}
+
+function newPage(clipboard) {
+  let pageNum = ++clipboard.pages;
+  clipboard[`page${pageNum}`] = [];
+  updateClipboard(clipboard);
+
+  console.log("Added new page");
+
+  sendClipboardToPopup(clipboard, pageNum);
 }
 
 // Creates object that holds the clipboard item's value and shortcut keys
@@ -46,8 +53,10 @@ function Item(value, shortcut) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     switch (request.msg) {
-      case "Load clipboard":
-        sendClipboardToPopup();
+      case "Get page":
+        getClipboard(function(storedObject) {
+          sendClipboardToPopup(storedObject.clipboard, request.page);
+        });
         break;
       case "Store item":
         //Store new item to page array and update storage
@@ -58,6 +67,11 @@ chrome.runtime.onMessage.addListener(
           updateClipboard(clipboard);
 
           console.log("Stored (Current Array): " + clipboard.page1);
+        });
+        break;
+      case "New page":
+        getClipboard(function(storedObject) {
+          newPage(storedObject.clipboard);
         });
         break;
       default:

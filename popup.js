@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let backgroundPage = chrome.extension.getBackgroundPage();
 
   loadClipboard();
+  addPageMarker();
 
   let form = document.querySelector("form");
   form.onsubmit = function() {
@@ -41,13 +42,40 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // New page button
-  // let newPage = document.
+  // TODO Have new page button only on the last page
+  let newPage = document.querySelector("#new-page");
+  newPage.onclick = function(event) {
+    addPageMarker();
+    clearClipboard();
+    chrome.runtime.sendMessage({msg: "New page"});
+  };
+
+  // Page nav
+  let nav = document.querySelector(".page-nav");
+  nav.onclick = function(event) {
+    let target = event.target;
+
+    if (target.tagName != "SPAN") return;
+
+    let pageNum = Array.from(nav.children).indexOf(target) + 1;
+    clearClipboard();
+    getPage(pageNum);
+  }
 });
 
 function loadClipboard() {
-  chrome.runtime.sendMessage({ msg: "Load clipboard" });
+  getPage(1);
 
   console.log("Clipboard loaded");
+}
+
+function getPage(pageNum) {
+  chrome.runtime.sendMessage({
+    msg: "Get page",
+    page: pageNum
+  });
+
+  console.log("Got Page: " + pageNum);
 }
 
 // Creates DOM object given item's characteristics
@@ -82,6 +110,23 @@ function storeItem(item) {
   console.log("Item stored");
 }
 
+function addPageMarker() {
+  let nav = document.querySelector(".page-nav");
+  let marker = document.createElement("span");
+  marker.classList.add("circle");
+  nav.appendChild(marker);
+  //TODO bind pagemarker with page
+}
+
+function clearClipboard() {
+  let actives = document.body.querySelectorAll(".active");
+  for (let active of actives) {
+    let emptyItem = document.createElement("div");
+    emptyItem.classList.add("col");
+    active.replaceWith(emptyItem);
+  }
+}
+
 function copy(text) {
   // Workaround to copy to clipboard without selection
   var textArea = document.createElement("textarea");
@@ -99,10 +144,10 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg !== "Sending clipboard") return;
 
-    clipboard = request.data.clipboard;
+    clipboard = request.data;
 
     let itemElements = [];
-    for (let item of clipboard.page1) {
+    for (let item of clipboard) {
       itemElements.push(createItemElement(item));
     }
     addItemElementsToDocument(itemElements);
