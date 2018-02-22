@@ -34,6 +34,7 @@ function updateClipboard(clipboard) {
   })
 }
 
+// Creates object that holds the clipboard item's value and shortcut keys
 function Item(value, shortcut) {
   this.value = value;
   this.shortcut = shortcut;
@@ -45,15 +46,15 @@ chrome.runtime.onMessage.addListener(
       case "Load clipboard":
         sendClipboardToPopup();
         break;
-      case "Add item":
-        //Add new item to page array and update storage
+      case "Store item":
+        //Store new item to page array and update storage
         let item = request.data;
         getClipboard(function(storedObject) {
           let clipboard = storedObject.clipboard;
           clipboard.page1.push(item);
           updateClipboard(clipboard);
 
-          console.log("Added and Updated: " + clipboard.page1);
+          console.log("Stored (Current Array): " + clipboard.page1);
         });
         break;
       default:

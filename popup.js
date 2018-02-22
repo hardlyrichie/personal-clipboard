@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Create new clickable item on clipboard
     let item = new backgroundPage.Item(value.value, shortcut.value);
     let itemElement = createItemElement(item);
-    document.body.append(itemElement);
+    addItemElementsToDocument([itemElement]);
 
     // Add item to clipboard object and update in chrome storage
     // TODO update page dynamically
-    addItem(item);
+    storeItem(item);
 
     // Clear input
     form.reset();
@@ -37,6 +37,7 @@ function loadClipboard() {
   console.log("Clipboard loaded");
 }
 
+// Creates DOM object given item's characteristics
 function createItemElement(item) {
   let itemElement = document.createElement("div");
   itemElement.classList.add("col");
@@ -45,13 +46,28 @@ function createItemElement(item) {
   return itemElement;
 }
 
-function addItem(item) {
+function addItemElementsToDocument(itemElements) {
+  // Replace the cols after the last active item with itemElements
+  let columns = document.body.querySelectorAll(".col");
+  let count = 0;
+  for (let col of columns) {
+    if (!(count < itemElements.length)) return;
+
+    // Checks if col already is active, has content in it
+    if (col.textContent.length !== 0) continue;
+
+    col.replaceWith(itemElements[count]);
+    count++;
+  }
+}
+
+function storeItem(item) {
   chrome.runtime.sendMessage({
-    msg: "Add item",
+    msg: "Store item",
     data: item
   });
 
-  console.log("Item added");
+  console.log("Item stored");
 }
 
 function copy(text) {
@@ -82,10 +98,11 @@ chrome.runtime.onMessage.addListener(
 
     clipboard = request.data.clipboard;
 
+    let itemElements = [];
     for (let item of clipboard.page1) {
-      let itemElement = createItemElement(item);
-      document.body.append(itemElement);
+      itemElements.push(createItemElement(item));
     }
+    addItemElementsToDocument(itemElements);
   }
 );
 
