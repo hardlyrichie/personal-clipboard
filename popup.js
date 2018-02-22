@@ -39,8 +39,8 @@ function loadClipboard() {
 
 // Creates DOM object given item's characteristics
 function createItemElement(item) {
-  let itemElement = document.createElement("div");
-  itemElement.classList.add("col");
+  let itemElement = document.createElement("button");
+  itemElement.classList.add("col", "active");
   itemElement.innerHTML = item.value;
   itemElement.onclick = (event) => copy(item.value);
   return itemElement;

@@ -24,11 +24,22 @@ html, body {
   margin-left: 20px;
   width: 40px;
   height: 40px;
-  background: rgb(211,211,211);
+  background: rgb(211, 211, 211);
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.active {
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid black;
+}
+
+.active:hover {
+  background: #000;
+  color: #fff;
 }
 
 .delete {
@@ -99,7 +110,7 @@ input[name=shortcut] {
   width: 140px;
 }
 
-button {
+form button {
   width: 50px;
   border-radius: 10px;
   background: #00a300;
@@ -109,8 +120,8 @@ button {
   -webkit-transition: 0.2s;
 }
 
-button:hover,
-button:focus {
+form button:hover,
+form button:focus {
   cursor: pointer;
   outline: none;
   background: #006100;
