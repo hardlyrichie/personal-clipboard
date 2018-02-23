@@ -68,7 +68,7 @@ chrome.runtime.onMessage.addListener(
           clipboard[`page${pageNum}`].push(item);
           updateClipboard(clipboard);
 
-          console.log("Stored (Current Array): " + clipboard[`page${pageNum}`]);
+          console.log("Stored");
         });
         break;
       case "New page":

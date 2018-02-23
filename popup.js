@@ -16,13 +16,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // Create new clickable item on clipboard
     let item = new backgroundPage.Item(value.value, shortcut.value);
     let itemElement = createItemElement(item);
-    addItemElementsToDocument([itemElement]);
+    let canAdd = addItemElementsToDocument([itemElement]);
 
-    // Add item to clipboard object and update in chrome storage
-    // TODO if page is full, refuse to add
-    let nav = document.querySelector(".page-nav");
-    let pageNum = Array.from(nav.children).indexOf(document.querySelector(".current-page")) + 1;
-    storeItem(item, pageNum);
+    if (canAdd) {
+      // Add item to clipboard object and update in chrome storage
+      let nav = document.querySelector(".page-nav");
+      let pageNum = Array.from(nav.children).indexOf(document.querySelector(".current-page")) + 1;
+      storeItem(item, pageNum);
+    }
 
     // Clear input
     form.reset();
@@ -134,11 +135,14 @@ function createItemElement(item) {
 }
 
 function addItemElementsToDocument(itemElements) {
+  // Cannot add to page if full
+  if (document.querySelectorAll(".active").length >= 41) return false;
+
   // Replace the cols after the last active item with itemElements
-  let columns = document.body.querySelectorAll(".col");
+  let columns = document.querySelectorAll(".col");
   let count = 0;
   for (let col of columns) {
-    if (!(count < itemElements.length)) return;
+    if (!(count < itemElements.length)) return true;
 
     // Checks if col already is active, is button, then skip
     if (col.tagName === "BUTTON") continue;
