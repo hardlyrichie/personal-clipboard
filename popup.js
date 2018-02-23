@@ -36,59 +36,9 @@ document.addEventListener("DOMContentLoaded", function() {
   page.onclick = function(event) {
     let target = event.target.closest("button");
 
-    if (!target) return;
+    if (!target || !page.contains(target)) return;
 
-    if (!page.contains(target)) return;
-
-    copy(target.innerHTML);
-  };
-
-  // Dynamic sizing when active items are hovered over
-  page.onmouseover = function(event) {
-    let target = event.target;
-
-    if (!target.className.includes("active")) return;
-
-    // Check if overflow
-    if (!(target.scrollHeight > target.clientHeight || target.scrollWidth > target.clientWidth)) return;
-
-    let coords = target.getBoundingClientRect();
-
-    target.style.position = "absolute";
-    target.style.zIndex = "100";
-
-    // TODO if not enough space expand right instead of left
-    // Move target to original position in document flow
-    target.style.top = coords.top - 10 + "px"; // Account for offset by margin and padding of containing block
-    target.style.left = coords.left - 20 + "px"
-
-    // Add buffer to move other elements back into normal flow
-    let sibling = target.nextElementSibling;
-    if (sibling) {
-      sibling.style.marginLeft = "80px";
-    }
-
-    // Reposition text from center to topleft
-    target.style.justifyContent = "start";
-    target.style.alignItems = "start";
-
-    target.style.transition = ".7s";
-
-    // Resize item to contain text
-    target.style.height = `${target.scrollHeight + 4}px`;
-    target.style.width = `${target.scrollWidth + 20}px`;
-
-  };
-
-  page.onmouseout = function(event) {
-    let target = event.target;
-
-    let sibling = target.nextElementSibling;
-    if (sibling) {
-      sibling.style = "";
-    }
-
-    target.style = "";
+    copy(target.firstElementChild.innerHTML);
   };
 
   // New page button
@@ -130,7 +80,21 @@ function getPage(pageNum) {
 function createItemElement(item) {
   let itemElement = document.createElement("button");
   itemElement.classList.add("col", "active");
-  itemElement.innerHTML = item.value;
+  // itemElement.innerHTML = item.value;
+  let pre = document.createElement("pre");
+  pre.innerHTML = item.value;
+
+  // Apply too wide class if text is wider than button
+  if (pre.innerHTML.indexOf("\n") > 5 || (pre.innerHTML.indexOf("\n") < 0 && pre.innerHTML.length > 5)) {
+    itemElement.classList.add("too-wide");
+  }
+
+  itemElement.appendChild(pre);
+
+  // Dynamic sizing when active items are hovered over
+  itemElement.addEventListener("mouseenter", expand);
+  itemElement.addEventListener("mouseleave", normalSize);
+
   return itemElement;
 }
 
@@ -204,6 +168,45 @@ function copy(text) {
   document.body.removeChild(textArea);
 
   console.log("Copied: " + text);
+}
+
+function expand(event) {
+  let target = event.target;
+  let pre = target.firstElementChild;
+  if (!(pre.scrollHeight > target.clientHeight || pre.scrollWidth > target.clientWidth)) return;
+
+  let coords = target.getBoundingClientRect();
+
+  target.style.position = "absolute";
+  target.style.zIndex = "100";
+  target.style.display = "inline";
+  target.style.textAlign = "left";
+  target.style.transition = "width .7s, height .7s";
+
+  // Move target to original position in document flow
+  target.style.top = coords.top - 10 + "px"; // Account for offset by margin and padding of containing block
+  target.style.left = coords.left - 20 + "px"
+
+  // Add buffer to move other elements back into normal flow
+  let sibling = target.nextElementSibling;
+  if (sibling) {
+    sibling.style.marginLeft = "80px";
+  }
+
+  // Resize item to contain text
+  target.style.width = `${((pre.scrollWidth > target.offsetWidth) ? pre.scrollWidth : target.offsetWidth) + 4}px`;
+  target.style.height = `${(pre.scrollHeight > target.offsetHeight) ? pre.scrollHeight + 4 : target.offsetHeight}px`;
+}
+
+function normalSize(event) {
+  let target = event.target;
+
+  let sibling = target.nextElementSibling;
+  if (sibling) {
+    sibling.style = "";
+  }
+
+  target.style = "";
 }
 
 // Display the clipboard on popup

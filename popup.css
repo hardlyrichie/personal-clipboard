@@ -22,6 +22,7 @@ html, body {
   float: left;
   margin-top: 10px;
   margin-left: 20px;
+  padding: 0;
   width: 40px;
   height: 40px;
   background: rgb(211, 211, 211);
@@ -31,14 +32,24 @@ html, body {
   align-items: center;
 }
 
+.too-wide {
+  text-align: left;
+  justify-content: start;
+}
+
+pre {
+  margin: 0;
+}
+
 .active {
   cursor: pointer;
   background: #fff;
   border: 2px solid #000;
   overflow: hidden;
+  /* overflow: visible; */
 }
 
-.active:hover {
+.active:active {
   background: #000;
   color: #fff;
 }
@@ -99,7 +110,7 @@ form {
   margin-bottom: 8px;
 }
 
-textarea, input {
+textarea, input, div[contenteditable]{
   border: 1px solid #00a300;
   border-radius: 3px;
   background: none;
@@ -110,7 +121,7 @@ textarea, input {
 }
 
 textarea {
-  resize: none;
+  /* resize: none; */
 }
 
 textarea:focus, input:focus {
