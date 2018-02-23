@@ -96,28 +96,36 @@ html, body {
 }
 
 form {
-  text-align: center;
   margin-bottom: 8px;
 }
 
-input {
+textarea, input {
   border: 1px solid #00a300;
   border-radius: 3px;
   background: none;
   padding: 3px 3px;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 3px;
 }
 
-input:focus {
+textarea {
+  resize: none;
+}
+
+textarea:focus, input:focus {
   border: 2px solid #006100;
   outline: none;
 }
 
 input[name=shortcut] {
-  width: 140px;
+  width: 97.5%;
 }
 
 form button {
-  width: 50px;
+  display: block;
+  margin: 0 auto;
+  width: 100px;
   border-radius: 10px;
   background: #00a300;
   color: #FFF;

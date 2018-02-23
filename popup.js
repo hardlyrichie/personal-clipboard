@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let form = document.querySelector("form");
   form.onsubmit = function() {
     // Get input from form
-    let value = form.querySelector("input[name=text]");
+    let value = form.querySelector("textarea");
     let shortcut = form.querySelector("input[name=shortcut]");
 
     // Create new clickable item on clipboard
@@ -42,8 +42,55 @@ document.addEventListener("DOMContentLoaded", function() {
     copy(target.innerHTML);
   };
 
+  // Dynamic sizing when active items are hovered over
+  page.onmouseover = function(event) {
+    let target = event.target;
+
+    if (!target.className.includes("active")) return;
+
+    // Check if overflow
+    if (!(target.scrollHeight > target.clientHeight || target.scrollWidth > target.clientWidth)) return;
+
+    let coords = target.getBoundingClientRect();
+
+    target.style.position = "absolute";
+    target.style.zIndex = "100";
+
+    // TODO if not enough space expand right instead of left
+    // Move target to original position in document flow
+    target.style.top = coords.top - 10 + "px"; // Account for offset by margin and padding of containing block
+    target.style.left = coords.left - 20 + "px"
+
+    // Add buffer to move other elements back into normal flow
+    let sibling = target.nextElementSibling;
+    if (sibling) {
+      sibling.style.marginLeft = "80px";
+    }
+
+    // Reposition text from center to topleft
+    target.style.justifyContent = "start";
+    target.style.alignItems = "start";
+
+    target.style.transition = ".7s";
+
+    // Resize item to contain text
+    target.style.height = `${target.scrollHeight + 4}px`;
+    target.style.width = `${target.scrollWidth + 20}px`;
+
+  };
+
+  page.onmouseout = function(event) {
+    let target = event.target;
+
+    let sibling = target.nextElementSibling;
+    if (sibling) {
+      sibling.style = "";
+    }
+
+    target.style = "";
+  };
+
   // New page button
-  // TODO Have new page button only on the last page
   let newPage = document.querySelector("#new-page");
   newPage.onclick = function(event) {
     clearClipboard();
