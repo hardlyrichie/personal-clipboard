@@ -125,10 +125,6 @@ textarea:focus, input:focus {
   outline: none;
 }
 
-input[name=shortcut] {
-  width: 97.5%;
-}
-
 form button {
   display: block;
   margin: 0 auto;

@@ -2,13 +2,19 @@
 
 // Initial settings for clipboard upon extension install
 chrome.runtime.onInstalled.addListener(function() {
-  // TODO Update initial contents with better options
   /*
     NOTE: chrome.storeage stores only serializable objects. DOM objects are not serializable.
     Therefore, a new object must be created that holds the clipboard item properties
   */
+  let pre = document.createElement("pre");
+  pre.innerHTML =
+  `──────▄▀▄─────▄▀▄
+─────▄█░░▀▀▀▀▀░░█▄
+─▄▄──█░░░░░░░░░░░█──▄▄
+█▄▄█─█░░▀░░┬░░▀░░█─█▄▄█`;
+
   let clipboard = [
-    [new Item("Ω"), new Item("π"), new Item("Ω")]
+    [new Item("π"), new Item("supercalifragilisticexpialidocious"), new Item("😀") , new Item(pre.innerHTML)]
   ];
 
   chrome.storage.local.set({"clipboard": clipboard}, function() {
