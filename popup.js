@@ -39,6 +39,11 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!target || !page.contains(target)) return;
 
     copy(target.firstElementChild.innerHTML);
+
+    let copyMessage = document.querySelector(".copy-message");
+    copyMessage.style.visibility = "visible";
+    copyMessage.style.backgroundColor = "rgba(0, 0, 0, .7)";
+    setTimeout(() => copyMessage.style = "", 1000);
   };
 
   // New page button
@@ -178,7 +183,7 @@ function expand(event) {
   let coords = target.getBoundingClientRect();
 
   target.style.position = "absolute";
-  target.style.zIndex = "100";
+  target.style.zIndex = "1";
   target.style.display = "inline";
   target.style.textAlign = "left";
   target.style.transition = "width .7s, height .7s";

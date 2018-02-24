@@ -151,3 +151,22 @@ form button:focus {
   outline: none;
   background: #006100;
 }
+
+.copy-message {
+  display: flex;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 100;
+  border-radius: 10px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0);
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  font-weight: bold;
+  width: 200px;
+  height: 100px;
+  visibility: hidden;
+  transition: background-color .2s linear;
+}
