@@ -105,7 +105,7 @@ function createItemElement(item) {
 
 function addItemElementsToDocument(itemElements) {
   // Cannot add to page if full
-  if (document.querySelectorAll(".active").length >= 41) return false;
+  if (document.querySelectorAll(".active").length >= 42) return false;
 
   // Replace the cols after the last active item with itemElements
   let columns = document.querySelectorAll(".col");

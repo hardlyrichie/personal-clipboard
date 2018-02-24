@@ -74,21 +74,9 @@ pre {
   border-radius: 5px;
 } */
 
-#new-page {
-  background-color: #63D1F4;
-  color: #fff;
-  border-radius: 5px;
-  font-size: 1.5em;
-}
-
-#new-page:hover {
-  cursor: pointer;
-  background-color: #4fa7c3;
-}
-
 .page-nav {
   text-align: center;
-  margin-top: -10px;
+  margin-bottom: 10px;
 }
 
 .circle {
@@ -155,8 +143,8 @@ form button:focus {
 .copy-message {
   display: flex;
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 160px;
+  left: 91px;
   z-index: 100;
   border-radius: 10px;
   color: #fff;
@@ -169,4 +157,38 @@ form button:focus {
   height: 100px;
   visibility: hidden;
   transition: background-color .2s linear;
+}
+
+.menu {
+  display: inline-block;
+  font-size: 1.5em;
+  position: absolute;
+  top: 375px;
+  right: 22px;
+}
+
+.menu span {
+  border-radius: 5px;
+  padding: 0px 6px;
+  margin: 0 3px;
+}
+
+#new-page {
+  background-color: #63D1F4;
+  color: #fff;
+}
+
+#new-page:hover {
+  cursor: pointer;
+  background-color: #4fa7c3;
+}
+
+#delete {
+  background-color: #B20000;
+  color: #fff;
+}
+
+#delete:hover {
+  cursor: pointer;
+  background-color: #7c0000;
 }
