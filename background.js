@@ -45,10 +45,9 @@ function newPage(clipboard) {
   sendClipboardToPopup(clipboard, clipboard.length - 1);
 }
 
-// Creates object that holds the clipboard item's value and shortcut keys
-function Item(value, shortcut) {
+// Creates object that holds the clipboard item's value
+function Item(value) {
   this.value = value;
-  this.shortcut = shortcut;
 }
 
 chrome.runtime.onMessage.addListener(

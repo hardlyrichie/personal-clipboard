@@ -11,10 +11,9 @@ document.addEventListener("DOMContentLoaded", function() {
   form.onsubmit = function() {
     // Get input from form
     let value = form.querySelector("textarea");
-    let shortcut = form.querySelector("input[name=shortcut]");
 
     // Create new clickable item on clipboard
-    let item = new backgroundPage.Item(value.value, shortcut.value);
+    let item = new backgroundPage.Item(value.value);
     let itemElement = createItemElement(item);
     let canAdd = addItemElementsToDocument([itemElement]);
 
