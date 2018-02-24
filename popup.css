@@ -53,18 +53,33 @@ pre {
   color: #fff;
 }
 
-.delete {
-  position: absolute;
-  top: 0px;
-  right: 1px;
-  text-decoration: none;
-  font-size: 8px;
-  color: red;
-  text-shadow: 0 1px 0 #fff;
+.del-item {
+  background: #B20000;
+  color: #fff;
+  opacity: 0.5;
 }
 
-.delete:hover {
+.del-page {
+  margin: 0;
+  padding: 0;
+  display: block;
+  position: absolute;
+  top: 368px;
+  left: 0px;
+  width: 100%;
+  border: 0;
+  border-bottom: 6px solid #B20000;
+  opacity: .5;
+  display: none;
+}
+
+.del-item:hover, .del-page:hover {
+  opacity: 1;
   cursor: pointer;
+}
+
+.del-page:active {
+  border-bottom: 6px solid #000;
 }
 
 .page-nav {
@@ -126,8 +141,8 @@ form button {
   -webkit-transition: 0.2s;
 }
 
-form button:hover,
-form button:focus {
+.submit:hover,
+.submit:focus {
   cursor: pointer;
   outline: none;
   background: #006100;
@@ -156,7 +171,7 @@ form button:focus {
   display: inline-block;
   font-size: 1.5em;
   position: absolute;
-  top: 375px;
+  top: 378px;
   right: 22px;
 }
 
@@ -183,5 +198,5 @@ form button:focus {
 
 #delete:hover {
   cursor: pointer;
-  background-color: #7c0000;
+  background-color: #3e0000;
 }

@@ -20,10 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (canAdd) {
       // Add item to clipboard object and update in chrome storage
-      let nav = document.querySelector(".page-nav");
-      let pageNum = Array.from(nav.children).indexOf(document.querySelector(".current-page")) + 1;
-
-      storeItem(item, pageNum);
+      storeItem(item, getPageNum());
     }
 
     // Clear input
@@ -32,32 +29,13 @@ document.addEventListener("DOMContentLoaded", function() {
     return false;
   }
 
-  // Event delegation
+  // Event delegation for items
   let page = document.querySelector(".page");
-  page.onclick = function(event) {
-    let target = event.target.closest("button");
-
-    if (!target || !page.contains(target)) return;
-
-    copy(target.firstElementChild.innerHTML);
-
-    let copyMessage = document.querySelector(".copy-message");
-    copyMessage.style.visibility = "visible";
-    copyMessage.style.backgroundColor = "rgba(0, 0, 0, .7)";
-    setTimeout(() => copyMessage.style = "", 1000);
-  };
+  page.addEventListener("click", itemClick);
 
   // Page nav
   let nav = document.querySelector(".page-nav");
-  nav.onclick = function(event) {
-    let target = event.target;
-
-    if (target.tagName != "SPAN") return;
-
-    let pageNum = Array.from(nav.children).indexOf(target) + 1;
-    clearClipboard();
-    getPage(pageNum);
-  }
+  nav.addEventListener("click", navClick);
 
   // New page button
   let newPage = document.querySelector("#new-page");
@@ -66,15 +44,136 @@ document.addEventListener("DOMContentLoaded", function() {
     chrome.runtime.sendMessage({msg: "New page"});
   };
 
-  // Delete BUTTON
-  let del = document.querySelector("#delete");
+  let delPage = document.querySelector(".del-page");
+  delPage.onclick = function(event) {
+    // Remove page marker
+    let page = getPageNum();
+    let canDelete = removePageMarker(page + 1);
 
+    if (!canDelete) return;
+
+    // Remove page from display
+    clearClipboard();
+
+    chrome.runtime.sendMessage({
+      msg: "Delete page",
+      page: page,
+    }, function() {
+      getPage(getPageNum());
+      document.querySelector("#delete").click();
+    });
+  };
+
+  // Delete BUTTON
+  let delOn = false;
+  let del = document.querySelector("#delete");
+  let formSubmit = document.querySelector(".submit");
+  del.onclick = function(event) {
+    delOn = !delOn;
+
+    let actives = document.querySelectorAll(".active");
+
+    // Turn on delete state
+    if (delOn) {
+      for (let active of actives) {
+        active.classList.add("del-item");
+        active.removeEventListener("mouseenter", expand);
+        active.removeEventListener("mouseleave", normalSize);
+      }
+      delPage.style.display = "block";
+
+      page.removeEventListener("click", itemClick);
+      page.addEventListener("click", deleteItem);
+
+      nav.removeEventListener("click", navClick)
+
+      formSubmit.style.opacity = ".5";
+      formSubmit.classList.remove("submit");
+      formSubmit.setAttribute("type", "button");
+
+      del.style.backgroundColor = "#3e0000";
+    } else {
+      // Turn off delete state
+      for (let active of actives) {
+        active.classList.remove("del-item");
+        active.addEventListener("mouseenter", expand);
+        active.addEventListener("mouseleave", normalSize);
+      }
+      delPage.style.display = "";
+
+      page.removeEventListener("click", deleteItem);
+      page.addEventListener("click", itemClick);
+
+      nav.addEventListener("click", navClick);
+
+      formSubmit.style = "";
+      formSubmit.classList.add("submit");
+      formSubmit.setAttribute("type", "submit");
+
+      del.style = "";
+
+      // Refresh clipboard display
+      clearClipboard();
+      getPage(getPageNum());
+    }
+  };
 });
 
+function navClick(event) {
+  let target = event.target;
+
+  if (target.tagName != "SPAN") return;
+
+  let nav = document.querySelector(".page-nav");
+
+  let pageNum = Array.from(nav.children).indexOf(target);
+  clearClipboard();
+  getPage(pageNum);
+}
+
+function itemClick(event) {
+  let page = document.querySelector(".page");
+  let target = event.target.closest("button");
+
+  if (!target || !page.contains(target)) return;
+
+  copy(target.firstElementChild.innerHTML);
+
+  let copyMessage = document.querySelector(".copy-message");
+  copyMessage.style.visibility = "visible";
+  copyMessage.style.backgroundColor = "rgba(0, 0, 0, .7)";
+  setTimeout(() => copyMessage.style = "", 1000);
+}
+
+function deleteItem(event) {
+  let page = document.querySelector(".page");
+  let target = event.target.closest("button");
+
+  if (!target || !page.contains(target)) return;
+
+  let item = Array.from(document.querySelectorAll(".active")).indexOf(target);
+
+  // Remove item from display
+  let emptyItem = document.createElement("div");
+  emptyItem.classList.add("col");
+  target.replaceWith(emptyItem);
+
+  chrome.runtime.sendMessage({
+    msg: "Delete item",
+    page: getPageNum(),
+    item: item
+  });
+}
+
 function loadClipboard() {
-  getPage(1);
+  getPage(0);
 
   console.log("Clipboard loaded");
+}
+
+function getPageNum() {
+  let nav = document.querySelector(".page-nav");
+  return Array.from(nav.children).indexOf(document.querySelector(".current-page"));
 }
 
 function getPage(pageNum) {
@@ -90,7 +189,7 @@ function getPage(pageNum) {
 function createItemElement(item) {
   let itemElement = document.createElement("button");
   itemElement.classList.add("col", "active");
-  // itemElement.innerHTML = item.value;
+
   let pre = document.createElement("pre");
   pre.innerHTML = item.value;
 
@@ -111,7 +210,7 @@ function createItemElement(item) {
 function addItemElementsToDocument(itemElements) {
   // Cannot add to page if full
   console.log(document.querySelectorAll(".active").length );
-  if (document.querySelectorAll(".active").length >= 42) return false;
+  if (document.querySelectorAll(".active").length >= 42) {console.log("cannot store"); return false;}
 
   // Replace the cols after the last active item with itemElements
   let columns = document.querySelectorAll(".col");
@@ -141,12 +240,31 @@ function storeItem(item, pageNum) {
 function addPageMarkers(pages) {
   let nav = document.querySelector(".page-nav");
 
-  let numOfMarkers = (pages - nav.children.length);
+  let numOfMarkers = pages - nav.children.length;
   for (let i = 0; i < numOfMarkers; i++) {
     let marker = document.createElement("span");
     marker.classList.add("circle");
     nav.appendChild(marker);
   }
+}
+
+function removePageMarker(pageNum) {
+  let nav = document.querySelector(".page-nav");
+  let pages = nav.children.length;
+
+  if (pages <= 1) return false;
+
+  // Remove all markers
+  while (nav.firstChild) {
+    nav.removeChild(nav.firstChild);
+  }
+
+  // Add back markers
+  addPageMarkers(pages - 1);
+  // Set currentpage marker to one before if possible
+  addCurrentPageMarker((pageNum === 1) ? 1 : pageNum - 1);
+
+  return true;
 }
 
 function clearClipboard() {
@@ -226,15 +344,14 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg !== "Sending clipboard") return;
 
-    clipboard = request.data[`page${request.currentPage}`];
-
+    clipboard = request.data[request.currentPage];
     let itemElements = [];
     for (let item of clipboard) {
       itemElements.push(createItemElement(item));
     }
     addItemElementsToDocument(itemElements);
 
-    addPageMarkers(request.data.pages);
-    addCurrentPageMarker(request.currentPage);
+    addPageMarkers(request.data.length);
+    addCurrentPageMarker(request.currentPage + 1);
   }
 );

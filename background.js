@@ -7,10 +7,10 @@ chrome.runtime.onInstalled.addListener(function() {
     NOTE: chrome.storeage stores only serializable objects. DOM objects are not serializable.
     Therefore, a new object must be created that holds the clipboard item properties
   */
-  let clipboard = {
-    pages: 1,
-    page1: [new Item("Ω"), new Item("π"), new Item("Ω")]
-  };
+  let clipboard = [
+    [new Item("Ω"), new Item("π"), new Item("Ω")]
+  ];
+
   chrome.storage.local.set({"clipboard": clipboard}, function() {
     console.log("Clipboard Initialized");
   })
@@ -36,13 +36,13 @@ function updateClipboard(clipboard) {
 }
 
 function newPage(clipboard) {
-  let pageNum = ++clipboard.pages;
-  clipboard[`page${pageNum}`] = [];
+  let arr = [];
+  clipboard.push(arr);
   updateClipboard(clipboard);
 
   console.log("Added new page");
 
-  sendClipboardToPopup(clipboard, pageNum);
+  sendClipboardToPopup(clipboard, clipboard.length - 1);
 }
 
 // Creates object that holds the clipboard item's value and shortcut keys
@@ -62,11 +62,10 @@ chrome.runtime.onMessage.addListener(
       case "Store item":
         //Store new item to page array and update storage
         let item = request.data;
-        console.log("adsgasd");
         getClipboard(function(storedObject) {
           let clipboard = storedObject.clipboard;
           let pageNum = request.page;
-          clipboard[`page${pageNum}`].push(item);
+          clipboard[pageNum].push(item);
           updateClipboard(clipboard);
 
           console.log("Stored");
@@ -76,6 +75,27 @@ chrome.runtime.onMessage.addListener(
         getClipboard(function(storedObject) {
           newPage(storedObject.clipboard);
         });
+        break;
+      case "Delete item":
+        getClipboard(function(storedObject) {
+          let clipboard = storedObject.clipboard;
+          let pageNum = request.page;
+          clipboard[pageNum].splice(request.item, 1);
+          updateClipboard(clipboard);
+
+          console.log("Removed Item");
+        });
+        break;
+      case "Delete page":
+        getClipboard(function(storedObject) {
+          let clipboard = storedObject.clipboard;
+          let pageNum = request.page;
+          clipboard.splice(pageNum, 1);
+          updateClipboard(clipboard);
+          console.log(storedObject);
+        });
+
+        console.log("Page deleted");
         break;
       default:
         throw new Error("Unknown message recieved");
