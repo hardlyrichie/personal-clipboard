@@ -11,13 +11,13 @@ chrome.runtime.onInstalled.addListener(function() {
     pages: 1,
     page1: [new Item("Ω"), new Item("π"), new Item("Ω")]
   };
-  chrome.storage.sync.set({"clipboard": clipboard}, function() {
+  chrome.storage.local.set({"clipboard": clipboard}, function() {
     console.log("Clipboard Initialized");
   })
 });
 
 function getClipboard(callback) {
-  chrome.storage.sync.get("clipboard", callback);
+  chrome.storage.local.get("clipboard", callback);
 }
 
 function sendClipboardToPopup(clipboard, pageNum) {
@@ -30,7 +30,7 @@ function sendClipboardToPopup(clipboard, pageNum) {
 }
 
 function updateClipboard(clipboard) {
-  chrome.storage.sync.set({"clipboard": clipboard}, function() {
+  chrome.storage.local.set({"clipboard": clipboard}, function() {
     console.log("Clipboard Updated");
   })
 }
@@ -62,6 +62,7 @@ chrome.runtime.onMessage.addListener(
       case "Store item":
         //Store new item to page array and update storage
         let item = request.data;
+        console.log("adsgasd");
         getClipboard(function(storedObject) {
           let clipboard = storedObject.clipboard;
           let pageNum = request.page;

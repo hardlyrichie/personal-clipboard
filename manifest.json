@@ -27,6 +27,7 @@
     "clipboardRead",
     "clipboardWrite",
     "storage",
-    "tabs"
+    "tabs",
+    "unlimitedStorage"
   ]
 }

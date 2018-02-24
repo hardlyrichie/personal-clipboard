@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // Add item to clipboard object and update in chrome storage
       let nav = document.querySelector(".page-nav");
       let pageNum = Array.from(nav.children).indexOf(document.querySelector(".current-page")) + 1;
+
       storeItem(item, pageNum);
     }
 
@@ -46,13 +47,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(() => copyMessage.style = "", 1000);
   };
 
-  // New page button
-  let newPage = document.querySelector("#new-page");
-  newPage.onclick = function(event) {
-    clearClipboard();
-    chrome.runtime.sendMessage({msg: "New page"});
-  };
-
   // Page nav
   let nav = document.querySelector(".page-nav");
   nav.onclick = function(event) {
@@ -64,6 +58,17 @@ document.addEventListener("DOMContentLoaded", function() {
     clearClipboard();
     getPage(pageNum);
   }
+
+  // New page button
+  let newPage = document.querySelector("#new-page");
+  newPage.onclick = function(event) {
+    clearClipboard();
+    chrome.runtime.sendMessage({msg: "New page"});
+  };
+
+  // Delete BUTTON
+  let del = document.querySelector("#delete");
+
 });
 
 function loadClipboard() {
@@ -105,6 +110,7 @@ function createItemElement(item) {
 
 function addItemElementsToDocument(itemElements) {
   // Cannot add to page if full
+  console.log(document.querySelectorAll(".active").length );
   if (document.querySelectorAll(".active").length >= 42) return false;
 
   // Replace the cols after the last active item with itemElements
@@ -119,6 +125,7 @@ function addItemElementsToDocument(itemElements) {
     col.replaceWith(itemElements[count]);
     count++;
   }
+  return true;
 }
 
 function storeItem(item, pageNum) {
@@ -231,6 +238,3 @@ chrome.runtime.onMessage.addListener(
     addCurrentPageMarker(request.currentPage);
   }
 );
-
-// document.querySelector("button[name='copy']").addEventListener("click", () => copy("Testing"));
-// document.querySelector("button[name='paste']").addEventListener("click", paste);

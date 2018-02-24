@@ -46,7 +46,6 @@ pre {
   background: #fff;
   border: 2px solid #000;
   overflow: hidden;
-  /* overflow: visible; */
 }
 
 .active:active {
@@ -67,12 +66,6 @@ pre {
 .delete:hover {
   cursor: pointer;
 }
-
-/* #del {
-  background-color: #983232;
-  color: #fff;
-  border-radius: 5px;
-} */
 
 .page-nav {
   text-align: center;
@@ -109,7 +102,7 @@ textarea, input, div[contenteditable]{
 }
 
 textarea {
-  /* resize: none; */
+  resize: none;
 }
 
 textarea:focus, input:focus {
