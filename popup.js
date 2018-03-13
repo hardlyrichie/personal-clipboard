@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
       msg: "Delete page",
       page: page,
     }, function() {
-      getPage(getPageNum());
+      // getPage(getPageNum());
       document.querySelector("#delete").click();
     });
   };
@@ -344,6 +344,7 @@ chrome.runtime.onMessage.addListener(
     if (request.msg !== "Sending clipboard") return;
 
     clipboard = request.data[request.currentPage];
+    console.log(clipboard);
     let itemElements = [];
     for (let item of clipboard) {
       itemElements.push(createItemElement(item));

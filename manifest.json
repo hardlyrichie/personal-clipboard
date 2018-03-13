@@ -23,6 +23,12 @@
     }
   },
 
+  "icons": {
+    "16": "clipboard16.png",
+    "48": "clipboard48.png",
+    "128": "clipboard128.png"
+  },
+
   "permissions": [
     "clipboardRead",
     "clipboardWrite",
